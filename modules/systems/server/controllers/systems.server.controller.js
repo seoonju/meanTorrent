@@ -123,7 +123,16 @@ exports.getSystemTemplateBackConfigFiles = function (req, res) {
  * @param res
  */
 exports.getSystemConfigContent = function (req, res) {
-  var config = shell.cat(path.resolve(req.query.filename));
+  var baseDir = path.resolve('./config');
+  var requestedPath = path.resolve(baseDir, req.query.filename);
+
+  if (!requestedPath.startsWith(baseDir)) {
+    return res.status(400).json({
+      message: 'Invalid file path'
+    });
+  }
+
+  var config = shell.cat(requestedPath);
 
   if (req.user.isAdmin) {
     res.json({
@@ -142,11 +151,20 @@ exports.getSystemConfigContent = function (req, res) {
  * @param res
  */
 exports.setSystemConfigContent = function (req, res) {
+  var baseDir = path.resolve('./config');
+  var requestedPath = path.resolve(baseDir, req.body.filename);
+
+  if (!requestedPath.startsWith(baseDir)) {
+    return res.status(400).json({
+      message: 'Invalid file path'
+    });
+  }
+
   // eslint-disable-next-line new-cap
   var cc = shell.ShellString(req.body.content);
 
   if (req.user.isAdmin) {
-    cc.to(path.resolve(req.body.filename));
+    cc.to(requestedPath);
     res.json({
       message: 'SERVER.SYSTEM_CONFIG_SAVE_SUCCESSFULLY'
     });
