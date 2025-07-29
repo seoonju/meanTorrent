@@ -7,6 +7,7 @@ var path = require('path'),
 var appConfig = config.meanTorrentConfig.app;
 var rssConfig = config.meanTorrentConfig.rss;
 var vsprintf = require('sprintf-js').vsprintf;
+var DOMPurify = require('dompurify'); // Import DOMPurify for sanitization
 
 /**
  * sendRSS
@@ -19,10 +20,10 @@ module.exports.sendRSS = function (req, res, torrents) {
   var stype = 'movie';
 
   if (req.query.language !== undefined) {
-    language = req.query.language;
+    language = DOMPurify.sanitize(req.query.language); // Sanitize user input
   }
   if (req.query.torrent_type !== undefined) {
-    stype = req.query.torrent_type;
+    stype = DOMPurify.sanitize(req.query.torrent_type); // Sanitize user input
   }
 
   res.writeHead(200, {

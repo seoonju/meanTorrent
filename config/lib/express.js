@@ -121,13 +121,16 @@ module.exports.initViewEngine = function (app) {
 module.exports.initSession = function (app, mongooseConn) {
   // Express MongoDB session storage
   app.use(session({
-    saveUninitialized: true,
-    resave: true,
+    saveUninitialized: false,
+    resave: false,
     secret: config.sessionSecret,
     cookie: {
       maxAge: config.sessionCookie.maxAge,
-      httpOnly: config.sessionCookie.httpOnly,
-      secure: config.sessionCookie.secure && config.secure.ssl
+      httpOnly: true,
+      secure: config.sessionCookie.secure && config.secure.ssl,
+      domain: config.domain,
+      path: '/',
+      expires: new Date(Date.now() + config.sessionCookie.maxAge)
     },
     name: config.sessionKey,
     store: new MongoStore({
