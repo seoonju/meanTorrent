@@ -126,8 +126,11 @@ module.exports.initSession = function (app, mongooseConn) {
     secret: config.sessionSecret,
     cookie: {
       maxAge: config.sessionCookie.maxAge,
-      httpOnly: config.sessionCookie.httpOnly,
-      secure: config.sessionCookie.secure && config.secure.ssl
+      httpOnly: true,
+      secure: config.secure.ssl,
+      domain: config.domain,
+      path: '/',
+      expires: new Date(Date.now() + config.sessionCookie.maxAge)
     },
     name: config.sessionKey,
     store: new MongoStore({
